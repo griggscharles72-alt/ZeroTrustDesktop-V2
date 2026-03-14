@@ -28,6 +28,7 @@ from pathlib import Path
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from ztd.audit import run_audit
 from ztd.doctor import run_doctor
 from ztd.launcher import VALID_COMMANDS, show_menu
 from ztd.paths import get_paths
