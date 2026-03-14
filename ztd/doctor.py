@@ -20,7 +20,10 @@ Author:
 
 from __future__ import annotations
 
+import getpass
+import platform
 import shutil
+import socket
 import subprocess
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -59,11 +62,58 @@ def _run_command(command: list[str]) -> tuple[bool, str]:
         return False, str(exc)
 
 
+def _disk_usage_detail() -> tuple[bool, str]:
+    try:
+        paths = get_paths()
+        usage = shutil.disk_usage(paths.repo_root)
+        gib = 1024 ** 3
+        total = usage.total / gib
+        used = usage.used / gib
+        free = usage.free / gib
+        return True, f"total={total:.2f}GiB used={used:.2f}GiB free={free:.2f}GiB"
+    except Exception as exc:
+        return False, str(exc)
+
+
 def collect_doctor_results() -> list[CheckResult]:
     cfg = load_config()
     results: list[CheckResult] = []
 
     doctor_cfg = cfg.get("doctor", {})
+
+    results.append(
+        CheckResult(
+            name="hostname",
+            ok=True,
+            detail=socket.gethostname(),
+        )
+    )
+
+    results.append(
+        CheckResult(
+            name="current_user",
+            ok=True,
+            detail=getpass.getuser(),
+        )
+    )
+
+    kernel = f"{platform.system()} {platform.release()}"
+    results.append(
+        CheckResult(
+            name="kernel",
+            ok=True,
+            detail=kernel,
+        )
+    )
+
+    ok, detail = _disk_usage_detail()
+    results.append(
+        CheckResult(
+            name="disk_usage",
+            ok=ok,
+            detail=detail,
+        )
+    )
 
     if doctor_cfg.get("check_python", True):
         results.append(
