@@ -14,7 +14,7 @@ Author:
 from __future__ import annotations
 
 PROJECT_NAME = "ZeroTrustDesktop-V2"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 PHASE = "read-only baseline"
 
 FULL_VERSION = f"{PROJECT_NAME} {VERSION} ({PHASE})"

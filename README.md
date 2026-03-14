@@ -48,7 +48,7 @@ The promoted design introduces:
 
 Current version:
 
-- `ZeroTrustDesktop-V2 0.1.0 (read-only baseline)`
+- `ZeroTrustDesktop-V2 0.1.1 (read-only baseline)`
 
 This version marks the first structured read-only baseline with:
 
@@ -64,7 +64,7 @@ This version marks the first structured read-only baseline with:
 
 ## Current Status
 
-This repository is now in the **0.1.0 read-only baseline** phase.
+This repository is now in the **0.1.1 read-only baseline** phase.
 
 What currently works:
 
