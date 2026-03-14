@@ -12,6 +12,7 @@ Behavior:
 - Reports latest doctor snapshot/report.
 - Reports latest files in reports, snapshots, diffs, and logs.
 - Gives a compact operator view of recent repo activity.
+- Uses shared logging utilities for consistent console output.
 
 Author:
 - SABLE + Elliot
@@ -22,7 +23,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from ztd.logging_utils import get_logger
 from ztd.paths import get_paths
+
+logger = get_logger("ztd.observe")
 
 
 @dataclass
@@ -50,34 +54,10 @@ def collect_observation() -> list[ObserveItem]:
     latest_diff = _latest_file(paths.diffs_dir, "*")
     latest_log = _latest_file(paths.logs_dir, "*")
 
-    items.append(
-        ObserveItem(
-            name="latest_doctor_snapshot",
-            ok=latest_doctor_snapshot is not None,
-            detail=str(latest_doctor_snapshot) if latest_doctor_snapshot else "none",
-        )
-    )
-    items.append(
-        ObserveItem(
-            name="latest_doctor_report",
-            ok=latest_doctor_report is not None,
-            detail=str(latest_doctor_report) if latest_doctor_report else "none",
-        )
-    )
-    items.append(
-        ObserveItem(
-            name="latest_diff",
-            ok=latest_diff is not None,
-            detail=str(latest_diff) if latest_diff else "none",
-        )
-    )
-    items.append(
-        ObserveItem(
-            name="latest_log",
-            ok=latest_log is not None,
-            detail=str(latest_log) if latest_log else "none",
-        )
-    )
+    items.append(ObserveItem("latest_doctor_snapshot", latest_doctor_snapshot is not None, str(latest_doctor_snapshot) if latest_doctor_snapshot else "none"))
+    items.append(ObserveItem("latest_doctor_report", latest_doctor_report is not None, str(latest_doctor_report) if latest_doctor_report else "none"))
+    items.append(ObserveItem("latest_diff", latest_diff is not None, str(latest_diff) if latest_diff else "none"))
+    items.append(ObserveItem("latest_log", latest_log is not None, str(latest_log) if latest_log else "none"))
 
     for label, directory in (
         ("reports_dir", paths.reports_dir),
@@ -86,13 +66,7 @@ def collect_observation() -> list[ObserveItem]:
         ("logs_dir", paths.logs_dir),
     ):
         count = len([p for p in directory.iterdir() if p.is_file() and p.name != ".gitkeep"])
-        items.append(
-            ObserveItem(
-                name=f"{label}_file_count",
-                ok=True,
-                detail=str(count),
-            )
-        )
+        items.append(ObserveItem(f"{label}_file_count", True, str(count)))
 
     return items
 
@@ -101,10 +75,10 @@ def run_observe() -> int:
     paths = get_paths()
     items = collect_observation()
 
-    print(f"[observe] repo={paths.repo_root}")
+    logger.info("repo=%s", paths.repo_root)
     for item in items:
         state = "OK" if item.ok else "WARN"
-        print(f"[observe] {state} {item.name}: {item.detail}")
+        logger.info("%s %s: %s", state, item.name, item.detail)
 
     return 0
 
