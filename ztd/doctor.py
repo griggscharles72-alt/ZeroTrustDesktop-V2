@@ -9,9 +9,9 @@ Purpose:
 - Return structured results for later report generation.
 
 Behavior:
-- Collects simple presence/status checks.
+- Collects simple presence and status checks.
 - Does not change system state.
-- Produces deterministic output for scaffold-phase validation.
+- Writes both JSON snapshot and markdown summary outputs.
 
 Author:
 - SABLE + Elliot
@@ -19,16 +19,14 @@ Author:
 
 from __future__ import annotations
 
-import json
 import shutil
 import subprocess
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 
 from ztd.config import load_config
 from ztd.paths import get_paths
+from ztd.report import write_json_snapshot, write_markdown_report
 
 
 @dataclass
@@ -91,7 +89,9 @@ def collect_doctor_results() -> list[CheckResult]:
         )
 
     if doctor_cfg.get("check_firewall", True):
-        ok, detail = _run_command(["bash", "-lc", "if command -v ufw >/dev/null 2>&1; then ufw status; else echo ufw not found; exit 1; fi"])
+        ok, detail = _run_command(
+            ["bash", "-lc", "if command -v ufw >/dev/null 2>&1; then ufw status; else echo ufw not found; exit 1; fi"]
+        )
         results.append(
             CheckResult(
                 name="firewall_ufw",
@@ -101,17 +101,22 @@ def collect_doctor_results() -> list[CheckResult]:
         )
 
     if doctor_cfg.get("check_apparmor", True):
-        ok, detail = _run_command(["bash", "-lc", "if command -v aa-status >/dev/null 2>&1; then aa-status; else echo aa-status not found; exit 1; fi"])
+        ok, detail = _run_command(
+            ["bash", "-lc", "if command -v aa-status >/dev/null 2>&1; then aa-status; else echo aa-status not found; exit 1; fi"]
+        )
+        normalized_ok = ok or "apparmor module is loaded" in detail.lower()
         results.append(
             CheckResult(
                 name="apparmor",
-                ok=ok,
+                ok=normalized_ok,
                 detail=detail or "aa-status unavailable",
             )
         )
 
     if doctor_cfg.get("check_fail2ban", True):
-        ok, detail = _run_command(["bash", "-lc", "if command -v fail2ban-client >/dev/null 2>&1; then fail2ban-client ping; else echo fail2ban-client not found; exit 1; fi"])
+        ok, detail = _run_command(
+            ["bash", "-lc", "if command -v fail2ban-client >/dev/null 2>&1; then fail2ban-client ping; else echo fail2ban-client not found; exit 1; fi"]
+        )
         results.append(
             CheckResult(
                 name="fail2ban",
@@ -123,28 +128,37 @@ def collect_doctor_results() -> list[CheckResult]:
     return results
 
 
-def write_doctor_snapshot(results: list[CheckResult]) -> Path:
+def build_doctor_payload(results: list[CheckResult]) -> dict[str, Any]:
     paths = get_paths()
-    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    output_file = paths.snapshots_dir / f"doctor_{timestamp}.json"
-
-    payload: dict[str, Any] = {
-        "generated_at_utc": timestamp,
+    return {
         "repo_root": str(paths.repo_root),
         "results": [asdict(item) for item in results],
     }
 
-    output_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return output_file
+
+def build_doctor_markdown_lines(results: list[CheckResult]) -> list[str]:
+    lines = ["## Doctor Results", ""]
+    for item in results:
+        state = "OK" if item.ok else "WARN"
+        lines.append(f"- **{item.name}**: {state}")
+        lines.append(f"  - detail: {item.detail}")
+    return lines
 
 
 def run_doctor() -> int:
     paths = get_paths()
     results = collect_doctor_results()
-    output_file = write_doctor_snapshot(results)
+
+    json_file = write_json_snapshot("doctor", build_doctor_payload(results))
+    markdown_file = write_markdown_report(
+        "ZeroTrustDesktop-V2 Doctor Report",
+        "doctor",
+        build_doctor_markdown_lines(results),
+    )
 
     print(f"[doctor] repo={paths.repo_root}")
-    print(f"[doctor] snapshot={output_file}")
+    print(f"[doctor] snapshot={json_file}")
+    print(f"[doctor] report={markdown_file}")
 
     for item in results:
         state = "OK" if item.ok else "WARN"
@@ -167,5 +181,6 @@ INSTRUCTIONS
 
 3. Expected behavior:
    - prints doctor checks
-   - writes a JSON snapshot into output/snapshots/
+   - writes JSON snapshot into output/snapshots/
+   - writes markdown report into output/reports/
 """
