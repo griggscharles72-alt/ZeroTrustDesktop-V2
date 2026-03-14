@@ -50,14 +50,16 @@ Current version:
 
 - `ZeroTrustDesktop-V2 0.1.1 (read-only baseline)`
 
-This version marks the first structured read-only baseline with:
+This version marks the structured read-only baseline with:
 
 - polished launcher and direct wrapper
 - shared config and repo-safe path handling
 - shared reporting and logging
 - live `doctor`, `status`, `audit`, and `observe`
-- guarded `apply` and `restore`
-- deterministic smoke tests
+- guarded preview `apply` and `restore`
+- read-only `state` capture
+- read-only `diff` artifact generation
+- deterministic smoke and module tests
 - synced GitHub remote baseline
 
 ---
@@ -76,20 +78,59 @@ What currently works:
 - shared config loading works
 - repo-safe path handling works
 - shared JSON and markdown reporting works
-- shared logging works
+- shared console and file logging works
 - live `doctor` module works
 - live `status` module works
 - live `audit` module works
 - live `observe` module works
-- guarded `apply` and `restore` handlers refuse by default
+- guarded preview `apply` works
+- guarded preview `restore` works
+- read-only `state` capture works
+- read-only `diff` artifact generation works
 - test suite passes
 - legacy reference files are preserved in `legacy/`
 
 What is next:
 
-- deepen `observe` with artifact age and freshness analysis
-- continue strengthening read-only observability before enabling any real enforcement behavior
-- preserve deterministic phase-based upgrades instead of restructuring the repo again
+- preview artifact summaries
+- state-aware status reporting
+- observe + state convergence
+- audit severity expansion
+- doctor threshold checks
+- dry-run enforcement planning
+- 0.1.2 checkpoint
+
+---
+
+## Next 7 Goals
+
+1. **Preview artifact summaries**
+   - Extend `apply` and `restore` preview output to summarize latest `doctor`, `audit`, `observe`, `state`, and `diff` artifacts in one place.
+   - Keep behavior read-only.
+
+2. **State-aware status reporting**
+   - Extend `status` so it reports latest state file, latest diff file, diff status, and changed count.
+   - Make repo/runtime posture visible from one command.
+
+3. **Observe + state convergence**
+   - Wire `observe` to report latest state/diff freshness and age alongside doctor/report freshness.
+   - Unify observability around artifact age and drift visibility.
+
+4. **Audit severity expansion**
+   - Expand `audit` to classify state/diff conditions as informational, warning, or critical.
+   - Preserve deterministic summary counts and overall result.
+
+5. **Doctor threshold checks**
+   - Add threshold-style checks for disk free space, required binary presence, and basic runtime expectations.
+   - Keep outputs structured and testable.
+
+6. **Dry-run enforcement planning**
+   - Introduce deterministic dry-run planning for future firewall/runtime actions without performing changes.
+   - Output planned actions into reports only.
+
+7. **0.1.2 checkpoint**
+   - After preview/report integration is stable, bump from `0.1.1` to `0.1.2`.
+   - Update tests, README, and version identity together in one clean checkpoint.
 
 ---
 
