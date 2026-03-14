@@ -1,4 +1,4 @@
-# ZeroTrustDesktop-V2
+cc# ZeroTrustDesktop-V2
 
 ZeroTrustDesktop-V2 is the promoted, structured continuation of the original ZeroTrustDesktop work.
 This version converts the legacy step-based security stack into a professional local-first desktop security and observability tool with a clean bootstrap, an easy launcher, and a modular Python package layout.
