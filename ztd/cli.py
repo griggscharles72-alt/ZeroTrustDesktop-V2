@@ -31,6 +31,7 @@ if __package__ is None or __package__ == "":
 from ztd.doctor import run_doctor
 from ztd.launcher import VALID_COMMANDS, show_menu
 from ztd.paths import get_paths
+from ztd.status import run_status
 
 
 def run_scaffold_command(command: str) -> int:
@@ -47,6 +48,9 @@ def run_command(command: str) -> int:
 
     if command == "doctor":
         return run_doctor()
+
+    if command == "status":
+        return run_status()
 
     return run_scaffold_command(command)
 
@@ -79,9 +83,9 @@ INSTRUCTIONS
 1. Save this file as:
    ztd/cli.py
 
-2. Test direct doctor mode:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli doctor
-
-3. Test scaffold mode:
+2. Test direct status mode:
    cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli status
+
+3. Test wrapper status mode:
+   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./scripts/ztd status
 """
