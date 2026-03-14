@@ -1,0 +1,46 @@
+project:
+  name: ZeroTrustDesktop-V2
+  mode: read_only
+  output_root: output
+  log_level: INFO
+
+runtime:
+  reports_dir: output/reports
+  snapshots_dir: output/snapshots
+  diffs_dir: output/diffs
+  logs_dir: output/logs
+  state_dir: output/state
+
+launcher:
+  default_command: status
+  show_menu: true
+
+safety:
+  allow_apply: false
+  allow_restore: false
+  require_explicit_flags: true
+
+network:
+  wifi_interface: wlan0
+  vpn_expected: false
+  vpn_interface: tun0
+
+firewall:
+  backend: ufw
+  expected_enabled: true
+
+observability:
+  write_markdown_report: true
+  write_json_snapshot: true
+  collect_processes: true
+  collect_network: true
+  collect_firewall: true
+  collect_system: true
+
+doctor:
+  check_python: true
+  check_vscode: true
+  check_git: true
+  check_firewall: true
+  check_apparmor: true
+  check_fail2ban: true
