@@ -28,11 +28,13 @@ from pathlib import Path
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from ztd.apply import run_apply
 from ztd.audit import run_audit
 from ztd.doctor import run_doctor
 from ztd.launcher import VALID_COMMANDS, show_menu
 from ztd.observe import run_observe
 from ztd.paths import get_paths
+from ztd.restore import run_restore
 from ztd.status import run_status
 
 
@@ -59,6 +61,12 @@ def run_command(command: str) -> int:
 
     if command == "observe":
         return run_observe()
+
+    if command == "apply":
+        return run_apply()
+
+    if command == "restore":
+        return run_restore()
 
     return run_scaffold_command(command)
 
