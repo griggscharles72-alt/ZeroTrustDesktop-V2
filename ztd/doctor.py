@@ -12,6 +12,7 @@ Behavior:
 - Collects simple presence and status checks.
 - Does not change system state.
 - Writes both JSON snapshot and markdown summary outputs.
+- Uses shared logging utilities for consistent console output.
 
 Author:
 - SABLE + Elliot
@@ -25,8 +26,11 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 from ztd.config import load_config
+from ztd.logging_utils import get_logger
 from ztd.paths import get_paths
 from ztd.report import write_json_snapshot, write_markdown_report
+
+logger = get_logger("ztd.doctor")
 
 
 @dataclass
@@ -156,31 +160,16 @@ def run_doctor() -> int:
         build_doctor_markdown_lines(results),
     )
 
-    print(f"[doctor] repo={paths.repo_root}")
-    print(f"[doctor] snapshot={json_file}")
-    print(f"[doctor] report={markdown_file}")
+    logger.info("repo=%s", paths.repo_root)
+    logger.info("snapshot=%s", json_file)
+    logger.info("report=%s", markdown_file)
 
     for item in results:
         state = "OK" if item.ok else "WARN"
-        print(f"[doctor] {state} {item.name}: {item.detail}")
+        logger.info("%s %s: %s", state, item.name, item.detail)
 
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(run_doctor())
-
-
-"""
-INSTRUCTIONS
-1. Save this file as:
-   ztd/doctor.py
-
-2. Test it with:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.doctor
-
-3. Expected behavior:
-   - prints doctor checks
-   - writes JSON snapshot into output/snapshots/
-   - writes markdown report into output/reports/
-"""
