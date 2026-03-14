@@ -12,7 +12,8 @@ Behavior:
 - Accepts an optional command argument.
 - Falls back to launcher menu when no command is provided.
 - Ensures runtime directories exist before command handling.
-- Prints scaffold-phase execution status until live modules are attached.
+- Routes live commands to real modules when implemented.
+- Keeps unfinished commands scaffold-safe.
 
 Author:
 - SABLE + Elliot
@@ -27,18 +28,27 @@ from pathlib import Path
 if __package__ is None or __package__ == "":
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from ztd.doctor import run_doctor
 from ztd.launcher import VALID_COMMANDS, show_menu
 from ztd.paths import get_paths
 
 
-def run_command(command: str) -> int:
+def run_scaffold_command(command: str) -> int:
     paths = get_paths()
-
     print(f"[ztd] command={command}")
     print(f"[ztd] repo={paths.repo_root}")
     print(f"[ztd] output={paths.output_dir}")
     print("[ztd] scaffold aligned and ready for module implementation")
     return 0
+
+
+def run_command(command: str) -> int:
+    command = command.strip().lower()
+
+    if command == "doctor":
+        return run_doctor()
+
+    return run_scaffold_command(command)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -69,9 +79,9 @@ INSTRUCTIONS
 1. Save this file as:
    ztd/cli.py
 
-2. Test direct command mode:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli status
+2. Test direct doctor mode:
+   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli doctor
 
-3. Test menu mode:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && printf '3\n' | ./.venv/bin/python -m ztd.cli
+3. Test scaffold mode:
+   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli status
 """
