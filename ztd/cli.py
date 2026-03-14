@@ -31,6 +31,7 @@ if __package__ is None or __package__ == "":
 from ztd.audit import run_audit
 from ztd.doctor import run_doctor
 from ztd.launcher import VALID_COMMANDS, show_menu
+from ztd.observe import run_observe
 from ztd.paths import get_paths
 from ztd.status import run_status
 
@@ -55,6 +56,9 @@ def run_command(command: str) -> int:
 
     if command == "audit":
         return run_audit()
+
+    if command == "observe":
+        return run_observe()
 
     return run_scaffold_command(command)
 
