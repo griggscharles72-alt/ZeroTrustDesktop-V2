@@ -11,7 +11,7 @@ Purpose:
 Behavior:
 - Checks config files, launcher/wrapper presence, and output directories.
 - Finds the most recent doctor JSON snapshot and markdown report.
-- Prints a compact status summary for operator use.
+- Reports repo branch, commit, cleanliness, and Python runtime details.
 - Uses shared logging utilities for consistent console output.
 
 Author:
@@ -20,6 +20,8 @@ Author:
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -39,6 +41,22 @@ class StatusItem:
 def _latest_file(directory: Path, pattern: str) -> Path | None:
     matches = sorted(directory.glob(pattern), key=lambda p: p.stat().st_mtime, reverse=True)
     return matches[0] if matches else None
+
+
+def _git_output(args: list[str]) -> tuple[bool, str]:
+    try:
+        completed = subprocess.run(
+            ["git", *args],
+            capture_output=True,
+            text=True,
+            cwd=get_paths().repo_root,
+            timeout=10,
+            check=False,
+        )
+        output = (completed.stdout or completed.stderr).strip()
+        return completed.returncode == 0, output
+    except Exception as exc:
+        return False, str(exc)
 
 
 def collect_status() -> list[StatusItem]:
@@ -65,6 +83,22 @@ def collect_status() -> list[StatusItem]:
 
     items.append(StatusItem("latest_doctor_snapshot", latest_snapshot is not None, str(latest_snapshot) if latest_snapshot else "none"))
     items.append(StatusItem("latest_doctor_report", latest_report is not None, str(latest_report) if latest_report else "none"))
+
+    ok, branch = _git_output(["branch", "--show-current"])
+    items.append(StatusItem("git_branch", ok and bool(branch), branch or "unknown"))
+
+    ok, commit = _git_output(["rev-parse", "--short", "HEAD"])
+    items.append(StatusItem("git_commit", ok and bool(commit), commit or "unknown"))
+
+    ok, dirty = _git_output(["status", "--porcelain"])
+    clean = ok and dirty == ""
+    items.append(StatusItem("git_worktree_clean", clean, "clean" if clean else (dirty or "dirty")))
+
+    items.append(StatusItem("python_executable", Path(sys.executable).exists(), sys.executable))
+    items.append(StatusItem("python_version", True, sys.version.split()[0]))
+
+    venv_path = Path(sys.prefix)
+    items.append(StatusItem("venv_path", venv_path.exists(), str(venv_path)))
 
     return items
 
