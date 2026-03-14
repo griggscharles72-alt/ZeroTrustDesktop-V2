@@ -1,7 +1,7 @@
-cc# ZeroTrustDesktop-V2
+# ZeroTrustDesktop-V2
 
 ZeroTrustDesktop-V2 is the promoted, structured continuation of the original ZeroTrustDesktop work.
-This version converts the legacy step-based security stack into a professional local-first desktop security and observability tool with a clean bootstrap, an easy launcher, and a modular Python package layout.
+This version converts the legacy step-based security stack into a professional local-first desktop security and observability tool with a clean bootstrap flow, an easy launcher, and a modular Python package layout.
 
 The goal of V2 is simple:
 
@@ -17,14 +17,14 @@ The goal of V2 is simple:
 
 ZeroTrustDesktop-V2 is designed to help inspect, observe, report on, and later harden a Linux desktop environment through a structured local workflow.
 
-This repo is being built around these principles:
+This repo is built around these principles:
 
 - local-first execution
 - deterministic file structure
 - readable output
 - safe bootstrap and launcher workflow
 - modular Python internals
-- future support for baseline, drift detection, and controlled restore behavior
+- controlled expansion from read-only observability into future guarded enforcement
 
 ---
 
@@ -52,38 +52,44 @@ Current version:
 
 This version marks the first structured read-only baseline with:
 
-- launcher and direct wrapper
-- shared config and path handling
+- polished launcher and direct wrapper
+- shared config and repo-safe path handling
 - shared reporting and logging
 - live `doctor`, `status`, `audit`, and `observe`
 - guarded `apply` and `restore`
+- deterministic smoke tests
+- synced GitHub remote baseline
 
 ---
 
 ## Current Status
 
-This repository is now in the scaffolded V2 phase.
+This repository is now in the **0.1.0 read-only baseline** phase.
 
 What currently works:
 
-- local repo structure is created
-- bootstrap entrypoint exists
-- launcher entrypoint exists
-- direct CLI wrapper exists
-- Python package layout exists
-- output folders exist
-- systemd placeholders exist
+- local repo structure is stable
+- bootstrap entrypoint works
+- launcher entrypoint works
+- direct CLI wrapper works
+- Python package layout is active
+- shared config loading works
+- repo-safe path handling works
+- shared JSON and markdown reporting works
+- shared logging works
+- live `doctor` module works
+- live `status` module works
+- live `audit` module works
+- live `observe` module works
+- guarded `apply` and `restore` handlers refuse by default
+- test suite passes
 - legacy reference files are preserved in `legacy/`
-- baseline commit is complete
 
-What is being built next:
+What is next:
 
-- real README contract
-- config defaults
-- repo-safe path handling
-- config loader
-- real launcher routing
-- real doctor, audit, and status behavior
+- deepen `observe` with artifact age and freshness analysis
+- continue strengthening read-only observability before enabling any real enforcement behavior
+- preserve deterministic phase-based upgrades instead of restructuring the repo again
 
 ---
 
