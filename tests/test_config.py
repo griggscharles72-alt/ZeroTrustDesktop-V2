@@ -25,3 +25,15 @@ def test_safety_defaults_are_false() -> None:
     cfg = load_config()
     assert cfg["safety"]["allow_apply"] is False
     assert cfg["safety"]["allow_restore"] is False
+
+
+def test_project_identity_defaults() -> None:
+    cfg = load_config()
+    assert cfg["project"]["name"] == "ZeroTrustDesktop-V2"
+    assert cfg["project"]["mode"] == "read_only"
+    assert cfg["project"]["log_level"] == "INFO"
+
+
+def test_launcher_default_command() -> None:
+    cfg = load_config()
+    assert cfg["launcher"]["default_command"] == "status"

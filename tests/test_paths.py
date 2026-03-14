@@ -17,3 +17,10 @@ def test_key_files_exist() -> None:
     paths = get_paths()
     assert paths.default_config_file.exists()
     assert paths.local_config_file.exists()
+    assert (paths.repo_root / "launch.sh").exists()
+    assert (paths.repo_root / "scripts" / "ztd").exists()
+
+
+def test_repo_root_name() -> None:
+    paths = get_paths()
+    assert paths.repo_root.name == "ZeroTrustDesktop-V2"
