@@ -44,6 +44,22 @@ The promoted design introduces:
 
 ---
 
+## Version
+
+Current version:
+
+- `ZeroTrustDesktop-V2 0.1.0 (read-only baseline)`
+
+This version marks the first structured read-only baseline with:
+
+- launcher and direct wrapper
+- shared config and path handling
+- shared reporting and logging
+- live `doctor`, `status`, `audit`, and `observe`
+- guarded `apply` and `restore`
+
+---
+
 ## Current Status
 
 This repository is now in the scaffolded V2 phase.

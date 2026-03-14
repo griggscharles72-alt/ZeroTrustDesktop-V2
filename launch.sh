@@ -5,6 +5,7 @@ set -o pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$REPO_DIR/.venv"
 TITLE="ZeroTrustDesktop-V2"
+VERSION_TEXT="$(python3 -m ztd.version 2>/dev/null || printf 'ZeroTrustDesktop-V2')"
 
 ensure_bootstrap() {
   if [ ! -d "$VENV_DIR" ]; then
@@ -24,6 +25,7 @@ run_cli() {
 
 show_menu() {
   printf '\n%s\n' "$TITLE"
+  printf '%s\n\n' "$VERSION_TEXT"
   printf '1) Doctor\n'
   printf '2) Audit\n'
   printf '3) Status\n'
