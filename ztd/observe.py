@@ -34,7 +34,7 @@ class ObserveItem:
 
 def _latest_file(directory: Path, pattern: str = "*") -> Path | None:
     matches = sorted(
-        [p for p in directory.glob(pattern) if p.is_file()],
+        [p for p in directory.glob(pattern) if p.is_file() and p.name != ".gitkeep"],
         key=lambda p: p.stat().st_mtime,
         reverse=True,
     )
@@ -85,7 +85,7 @@ def collect_observation() -> list[ObserveItem]:
         ("diffs_dir", paths.diffs_dir),
         ("logs_dir", paths.logs_dir),
     ):
-        count = len([p for p in directory.iterdir() if p.is_file()])
+        count = len([p for p in directory.iterdir() if p.is_file() and p.name != ".gitkeep"])
         items.append(
             ObserveItem(
                 name=f"{label}_file_count",
