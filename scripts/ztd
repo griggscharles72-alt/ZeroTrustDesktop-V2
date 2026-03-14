@@ -7,7 +7,16 @@ REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 VENV_DIR="$REPO_DIR/.venv"
 
 if [ ! -d "$VENV_DIR" ]; then
-  "$REPO_DIR/bootstrap.sh" || exit 1
+  printf '[ztd-wrapper] No virtual environment found. Running bootstrap...\n'
+  "$REPO_DIR/bootstrap.sh" || {
+    printf '[ztd-wrapper] Bootstrap failed.\n' >&2
+    exit 1
+  }
+fi
+
+if [ "${1:-}" = "" ]; then
+  printf 'Usage: ./scripts/ztd {doctor|audit|status|observe|apply|restore}\n' >&2
+  exit 1
 fi
 
 # shellcheck disable=SC1091
