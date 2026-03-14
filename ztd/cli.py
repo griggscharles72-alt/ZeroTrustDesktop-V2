@@ -53,40 +53,24 @@ def run_command(command: str) -> int:
     if command == "status":
         return run_status()
 
+    if command == "audit":
+        return run_audit()
+
     return run_scaffold_command(command)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ztd", description="ZeroTrustDesktop-V2")
-    parser.add_argument(
-        "command",
-        nargs="?",
-        choices=VALID_COMMANDS,
-        help="Command to run",
-    )
+    parser.add_argument("command", nargs="?", choices=VALID_COMMANDS, help="Command to run")
     return parser
 
 
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-
     command = args.command or show_menu()
     return run_command(command)
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-
-"""
-INSTRUCTIONS
-1. Save this file as:
-   ztd/cli.py
-
-2. Test direct status mode:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./.venv/bin/python -m ztd.cli status
-
-3. Test wrapper status mode:
-   cd /home/pc-10/repos/ZeroTrustDesktop-V2 && ./scripts/ztd status
-"""
