@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -u
+set -o pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+VENV_DIR="$REPO_DIR/.venv"
+
+if [ ! -d "$VENV_DIR" ]; then
+  "$REPO_DIR/bootstrap.sh" || exit 1
+fi
+
+# shellcheck disable=SC1091
+source "$VENV_DIR/bin/activate"
+python3 -m ztd "$@"

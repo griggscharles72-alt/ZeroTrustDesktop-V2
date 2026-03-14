@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+config/ztd.local.yaml
+output/reports/*
+!output/reports/.gitkeep
+output/snapshots/*
+!output/snapshots/.gitkeep
+output/diffs/*
+!output/diffs/.gitkeep
+output/logs/*
+!output/logs/.gitkeep
